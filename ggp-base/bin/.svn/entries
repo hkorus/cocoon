@@ -2,13 +2,13 @@
 
 dir
 650
-http://ggp-base.googlecode.com/svn/trunk/ggp-base/bin
+http://ggp-base.googlecode.com/svn/trunk/ggp-base/src
 http://ggp-base.googlecode.com/svn
 
 
 
-2010-03-31T08:59:49.245374Z
-3
+2013-05-21T06:41:29.224364Z
+650
 sam.schreiber@gmail.com
 
 
@@ -25,4 +25,10 @@ sam.schreiber@gmail.com
 
 
 716a755e-b13f-cedc-210d-596dafc6fb9b
+
+external
+dir
+
+org
+dir
 

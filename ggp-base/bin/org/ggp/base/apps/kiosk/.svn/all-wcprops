@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/637/trunk/ggp-base/src/org/ggp/base/apps/kiosk
+END
+Kiosk.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/573/trunk/ggp-base/src/org/ggp/base/apps/kiosk/Kiosk.java
+END
+MoveSelectedEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/apps/kiosk/MoveSelectedEvent.java
+END
+GameCanvas.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/apps/kiosk/GameCanvas.java
+END
+KioskGamer.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/637/trunk/ggp-base/src/org/ggp/base/apps/kiosk/KioskGamer.java
+END
+GameGUI.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/apps/kiosk/GameGUI.java
+END

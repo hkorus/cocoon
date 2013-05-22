@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/643/trunk/ggp-base/src/org/ggp/base/util/propnet/factory
+END
+PropNetFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/643/trunk/ggp-base/src/org/ggp/base/util/propnet/factory/PropNetFactory.java
+END
+AssignmentIterator.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/propnet/factory/AssignmentIterator.java
+END
+AssignmentsFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/propnet/factory/AssignmentsFactory.java
+END
+OptimizingPropNetFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/608/trunk/ggp-base/src/org/ggp/base/util/propnet/factory/OptimizingPropNetFactory.java
+END
+Assignments.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/propnet/factory/Assignments.java
+END
+AssignmentsImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/propnet/factory/AssignmentsImpl.java
+END

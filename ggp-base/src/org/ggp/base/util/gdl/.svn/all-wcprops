@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/646/trunk/ggp-base/src/org/ggp/base/util/gdl
+END
+GdlVisitor.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/GdlVisitor.java
+END
+GdlUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/GdlUtils.java
+END
+GdlVisitors.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/GdlVisitors.java
+END
+GdlValidator.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/GdlValidator.java
+END

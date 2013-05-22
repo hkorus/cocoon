@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/432/trunk/ggp-base/src/external/JSON
+END
+JSONString.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/191/trunk/ggp-base/src/external/JSON/JSONString.java
+END
+JSONObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/432/trunk/ggp-base/src/external/JSON/JSONObject.java
+END
+JSONTokener.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/191/trunk/ggp-base/src/external/JSON/JSONTokener.java
+END
+JSONException.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/191/trunk/ggp-base/src/external/JSON/JSONException.java
+END
+JSONArray.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/432/trunk/ggp-base/src/external/JSON/JSONArray.java
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/191/trunk/ggp-base/src/external/JSON/README
+END

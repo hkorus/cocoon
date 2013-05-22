@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/!svn/ver/556/trunk/ggp-base/src/org/ggp/base/apps/kiosk/templates
+END
+GameCanvas_Chessboard.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/apps/kiosk/templates/GameCanvas_Chessboard.java
+END
+GameCanvas_SimpleGrid.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/apps/kiosk/templates/GameCanvas_SimpleGrid.java
+END
+CommonGraphics.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/apps/kiosk/templates/CommonGraphics.java
+END
+GameCanvas_FancyGrid.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/apps/kiosk/templates/GameCanvas_FancyGrid.java
+END

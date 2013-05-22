@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/637/trunk/ggp-base/src/org/ggp/base/player/request/grammar
+END
+AbortRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/536/trunk/ggp-base/src/org/ggp/base/player/request/grammar/AbortRequest.java
+END
+InfoRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/616/trunk/ggp-base/src/org/ggp/base/player/request/grammar/InfoRequest.java
+END
+StartRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/536/trunk/ggp-base/src/org/ggp/base/player/request/grammar/StartRequest.java
+END
+Request.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/player/request/grammar/Request.java
+END
+PreviewRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/637/trunk/ggp-base/src/org/ggp/base/player/request/grammar/PreviewRequest.java
+END
+StopRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/536/trunk/ggp-base/src/org/ggp/base/player/request/grammar/StopRequest.java
+END
+PlayRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/536/trunk/ggp-base/src/org/ggp/base/player/request/grammar/PlayRequest.java
+END

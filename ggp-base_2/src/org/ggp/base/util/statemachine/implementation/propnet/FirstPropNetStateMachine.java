@@ -12,6 +12,7 @@ import org.ggp.base.util.gdl.grammar.Gdl;
 import org.ggp.base.util.gdl.grammar.GdlConstant;
 import org.ggp.base.util.gdl.grammar.GdlRelation;
 import org.ggp.base.util.gdl.grammar.GdlSentence;
+import org.ggp.base.util.gdl.grammar.GdlTerm;
 import org.ggp.base.util.propnet.architecture.Component;
 import org.ggp.base.util.propnet.architecture.PropNet;
 import org.ggp.base.util.propnet.architecture.components.*;
@@ -46,6 +47,18 @@ public class FirstPropNetStateMachine extends StateMachine {
 
 	private List<Collection<Proposition>> factorList;
 
+	private Move noopMove = null;
+
+
+	/**
+	 * Returns a move that is effectively a nooping move (has no effect on outcome of game), if one exists.  Returns null otherwise.
+	 * @param role
+	 * @return
+	 */
+	public Move getNoopMove(){
+		return noopMove;
+	}
+
 	/**
 	 * Initializes the PropNetStateMachine. You should compute the topological
 	 * ordering here. Additionally you may compute the initial state here, at
@@ -65,6 +78,11 @@ public class FirstPropNetStateMachine extends StateMachine {
 			//Set<Set<Component>> factors = factorPropNet();
 			System.out.println("PropNetStateMachine: starting to factor...");
 			factorList = factorPropNet3();
+
+			noopMove = findNoopMove(factorList);
+
+			System.out.println("Noop Move: " + noopMove);
+
 			System.out.println("Found "+factorList.size()+" factors.");
 			for(Collection<Proposition> factor : factorList){
 				System.out.println("Factor " + factor);
@@ -73,7 +91,20 @@ public class FirstPropNetStateMachine extends StateMachine {
 		}catch(InterruptedException ex){
 			ex.printStackTrace();
 		}
-	}    
+	}
+
+	private Move findNoopMove(List<Collection<Proposition>> factorList){
+		for(Component p : getInputPropositions()){
+			boolean foundPropInFactor = false;
+			for(Collection<Proposition> factor : factorList){
+				if(factor.contains(p)) foundPropInFactor = true;
+			}
+			if(!foundPropInFactor){
+				return getMoveFromProposition((Proposition)p);
+			}
+		}
+		return null;
+	}
 
 	private boolean propMarkConjunction(Component p, boolean isRecur){
 		for (Component c : p.getInputs()){
@@ -191,27 +222,29 @@ public class FirstPropNetStateMachine extends StateMachine {
 				Collection<Proposition> factorInputs = new HashSet<Proposition>();
 				Set<Component> visitedComponents = new HashSet<Component>();
 				getFactorInputs(parent, factorInputs, visitedComponents);
-				
+
 				/* Check to see if this is a valid factor by seeing if it's base propositions overlap with any existing factors
 				 * and whether it has any inputs at all.
 				 */
 				boolean factorIsValid = true;
 				if(factorInputs.size()>0){
 					for(Proposition p : factorInputs){
-						for(int i=0; i< factorList.size();){
+						for(int i=0; i< factorList.size();i++){
 							if(factorList.get(i).contains(p)) {
 								factorIsValid = false; break;
 							}
 						}
 						if(factorIsValid==false) break;
 					}
-					
+
 					if(!factorIsValid){
 						System.out.println("Found invalid factor; ignoring.");
 					} else {
 						System.out.println("Added new factor.");
 						factorList.add(factorInputs);
 					}
+				} else {
+					System.out.println("Ignoring factor of size 0.");
 				}
 			}
 			return factorList;
@@ -345,7 +378,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 		List<List<Move>> listMoves = new ArrayList<List<Move>>();
 		markBases(state);
 		Set<Proposition> legals = propNet.getLegalPropositions().get(role);
-		
+
 		if (legals == null) {
 			return new ArrayList<List<Move>>();
 		}
@@ -354,17 +387,26 @@ public class FirstPropNetStateMachine extends StateMachine {
 			List<Move> factorLegalMoves = new LinkedList<Move>();
 			for(Proposition p : factor){
 				Proposition legalP = propNet.getLegalInputMap().get(p);
-				if(propMarkPRecursive(legalP)) factorLegalMoves.add(getMoveFromProposition(legalP));
+				if(propMarkPRecursive(legalP) && legals.contains(legalP)) factorLegalMoves.add(getMoveFromProposition(legalP));
 			}
 
+			/* For games that alternate turns, we throw in a fake noop move */
+			if(factorLegalMoves.isEmpty()){
+				factorLegalMoves.add(getFakeNoopMove());
+			}
 			listMoves.add(factorLegalMoves);
 		}
 		clearPropNet();
 
-		System.out.println("Role: " + role + " has " + listMoves);
+		//System.out.println("Role: " + role + " has " + listMoves);
 		return listMoves;
 	}
 
+
+	//private Move fakeNoopMove = getMoveFromProposition(new GdlSentence("noop"));
+	public Move getFakeNoopMove(){
+		return getNoopMove();
+	}
 	public int getNumFactors(){
 		return factorList.size();
 	}
@@ -376,13 +418,12 @@ public class FirstPropNetStateMachine extends StateMachine {
 			List<List<Move>> legals = new ArrayList<List<Move>>();
 			for (Role r : getRoles()) {
 				legals.add(getLegalMoves_Factoring(state, r).get(i));
-				System.out.println("Factor " + i + ": " + legals.get(legals.size()-1));
 			}
+
 			List<List<Move>> crossProduct = new ArrayList<List<Move>>();
 			crossProductLegalMoves(legals, crossProduct, new LinkedList<Move>());
 			jointMoves.add(crossProduct);
 		}
-		System.out.println("Joint Moves: " + jointMoves);
 		return jointMoves;
 	}
 
@@ -451,16 +492,15 @@ public class FirstPropNetStateMachine extends StateMachine {
 	Set<Component> inputPropositions = null;
 
 	private boolean isInput(Component base){
-
-		if(inputPropositions!=null){
-			return inputPropositions.contains(base);
-		}
-		inputPropositions = new HashSet<Component>();
-		for(Component s: propNet.getInputPropositions().values()){
-			inputPropositions.add(s);
-		}
-		return inputPropositions.contains(base);
+		return getInputPropositions().contains(base);
 	}
+
+	private Set<Component> getInputPropositions(){
+		if(inputPropositions!=null) return inputPropositions;
+		inputPropositions = new HashSet<Component>(propNet.getInputPropositions().values());
+		return inputPropositions;
+	}
+
 
 	private List<Component> getLeaves(PropNet prop){
 		List<Component> leaves = new LinkedList<Component>();

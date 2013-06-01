@@ -411,6 +411,13 @@ public class FirstPropNetStateMachine extends StateMachine {
 		return factorList.size();
 	}
 
+	/**
+	 * Returns all combinations of legal moves for each factor.  Needs to be updated to allow the user to tell it which factor
+	 * it should process to save time.
+	 * @param state
+	 * @return
+	 * @throws MoveDefinitionException
+	 */
 	public List<List<List<Move>>> getLegalJointMoves_Factoring(MachineState state) throws MoveDefinitionException {
 		List<List<List<Move>>> jointMoves = new ArrayList<List<List<Move>>>();
 		/* Initialize the jointMoves list */

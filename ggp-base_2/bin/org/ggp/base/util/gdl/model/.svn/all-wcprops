@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model
+END
+MutexFinderTester.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/MutexFinderTester.java
+END
+MoveMutexFinder.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/MoveMutexFinder.java
+END
+GameFlow.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/GameFlow.java
+END
+RuleSplittableSentenceModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/RuleSplittableSentenceModel.java
+END
+SimpleSentenceForm.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/SimpleSentenceForm.java
+END
+Mutex.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/Mutex.java
+END
+SimpleSentenceFormSource.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/SimpleSentenceFormSource.java
+END
+SentenceModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/SentenceModel.java
+END
+SentenceModelUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/SentenceModelUtils.java
+END
+SentenceModelImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/SentenceModelImpl.java
+END
+SentenceForm.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/SentenceForm.java
+END
+TermModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/TermModel.java
+END
+GameFlowTester.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/GameFlowTester.java
+END
+SentenceFormSource.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/util/gdl/model/SentenceFormSource.java
+END

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/player/gamer/statemachine/human/event
+END
+HumanTimeoutEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/player/gamer/statemachine/human/event/HumanTimeoutEvent.java
+END
+HumanNewMovesEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/player/gamer/statemachine/human/event/HumanNewMovesEvent.java
+END

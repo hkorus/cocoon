@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/637/trunk/ggp-base/src/org/ggp/base/player/gamer/exception
+END
+StoppingException.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/536/trunk/ggp-base/src/org/ggp/base/player/gamer/exception/StoppingException.java
+END
+AbortingException.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/536/trunk/ggp-base/src/org/ggp/base/player/gamer/exception/AbortingException.java
+END
+MetaGamingException.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/!svn/ver/536/trunk/ggp-base/src/org/ggp/base/player/gamer/exception/MetaGamingException.java
+END
+GamePreviewException.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/637/trunk/ggp-base/src/org/ggp/base/player/gamer/exception/GamePreviewException.java
+END
+MoveSelectionException.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/536/trunk/ggp-base/src/org/ggp/base/player/gamer/exception/MoveSelectionException.java
+END

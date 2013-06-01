@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2013-06-01T14:53:55</date>
+  <millis>1370123635887</millis>
+  <sequence>0</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>platypus.logging.PlatypusLogger</class>
+  <method>getLogger</method>
+  <thread>10</thread>
+  <message>Added FileHandler to Logger</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:14</date>
+  <millis>1370123654129</millis>
+  <sequence>2</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>--------Best Move after Minimiax--------</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:14</date>
+  <millis>1370123654129</millis>
+  <sequence>3</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>Sure move is ( drop_normal 5 )</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:14</date>
+  <millis>1370123654129</millis>
+  <sequence>4</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>with the sure score of 0.0</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:14</date>
+  <millis>1370123654130</millis>
+  <sequence>5</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>Starting Monte Carlo</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:14</date>
+  <millis>1370123654130</millis>
+  <sequence>6</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>PAUSING PLATYPUS FOR 9495</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:23</date>
+  <millis>1370123663379</millis>
+  <sequence>7</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop_normal 5 ) value: 0.0 visited: 26</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:23</date>
+  <millis>1370123663384</millis>
+  <sequence>8</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop_normal 1 ) value: 0.0 visited: 26</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:23</date>
+  <millis>1370123663391</millis>
+  <sequence>9</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop_normal 2 ) value: 0.0 visited: 30</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:23</date>
+  <millis>1370123663395</millis>
+  <sequence>10</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop_normal 4 ) value: 0.0 visited: 31</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:23</date>
+  <millis>1370123663399</millis>
+  <sequence>11</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop_normal 6 ) value: 0.0 visited: 30</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:23</date>
+  <millis>1370123663403</millis>
+  <sequence>12</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop_normal 8 ) value: 0.0 visited: 24</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:23</date>
+  <millis>1370123663405</millis>
+  <sequence>13</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop_normal 7 ) value: 0.0 visited: 23</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:23</date>
+  <millis>1370123663407</millis>
+  <sequence>14</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop_normal 3 ) value: 0.0 visited: 26</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:24</date>
+  <millis>1370123664625</millis>
+  <sequence>15</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>--------Best Move after Monte Carlo--------</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:24</date>
+  <millis>1370123664626</millis>
+  <sequence>16</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>CHOSE RANDOM</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:24</date>
+  <millis>1370123664627</millis>
+  <sequence>17</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>best move: ( drop_suicide 6 )</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:27</date>
+  <millis>1370123667146</millis>
+  <sequence>18</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>--------Best Move after Minimiax--------</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:27</date>
+  <millis>1370123667146</millis>
+  <sequence>19</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>Sure move is ( drop_suicide 3 )</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:27</date>
+  <millis>1370123667146</millis>
+  <sequence>20</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>with the sure score of 0.0</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:27</date>
+  <millis>1370123667147</millis>
+  <sequence>21</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>Starting Monte Carlo</message>
+</record>
+<record>
+  <date>2013-06-01T14:54:27</date>
+  <millis>1370123667147</millis>
+  <sequence>22</sequence>
+  <logger>game1370123635884</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>PAUSING PLATYPUS FOR 9495</message>
+</record>
+</log>

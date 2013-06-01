@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/549/trunk/ggp-base/src/org/ggp/base/player/gamer/event
+END
+GamerNewMatchEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/player/gamer/event/GamerNewMatchEvent.java
+END
+GamerUnrecognizedMatchEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/player/gamer/event/GamerUnrecognizedMatchEvent.java
+END
+GamerCompletedMatchEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/player/gamer/event/GamerCompletedMatchEvent.java
+END
+GamerAbortedMatchEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/529/trunk/ggp-base/src/org/ggp/base/player/gamer/event/GamerAbortedMatchEvent.java
+END
+GamerSelectedMoveEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/549/trunk/ggp-base/src/org/ggp/base/player/gamer/event/GamerSelectedMoveEvent.java
+END

@@ -1,52 +1,0 @@
-10
-
-dir
-650
-http://ggp-base.googlecode.com/svn/trunk/ggp-base/src/org/ggp/base/apps
-http://ggp-base.googlecode.com/svn
-
-
-
-2013-05-20T21:53:08.609415Z
-648
-sam.schreiber@gmail.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-716a755e-b13f-cedc-210d-596dafc6fb9b
-
-kiosk
-dir
-
-validator
-dir
-
-consoles
-dir
-
-server
-dir
-
-logging
-dir
-
-utilities
-dir
-
-tiltyard
-dir
-
-player
-dir
-

@@ -36,7 +36,7 @@ public class BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded extends Subplayer
 	private static final boolean GUARANTEED_LOSSES_SINGLE_MOVE_CHECK = false;
 
 	/* The number of threads to use to perform depth charges at the same time */
-	public static final int MAX_NUM_THREADS = 1;
+	public static final int MAX_NUM_THREADS = 4;
 	
 	private long timeout;
 	

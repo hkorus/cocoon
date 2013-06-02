@@ -54,6 +54,10 @@ public abstract class StateMachine
     public Move getMoveFromTerm(GdlTerm term) {
         return new Move(term);
     }
+    
+    public Move getNoopMove(){
+    	return null;
+    }
 
     // ============================================
     //          Stubs for advanced methods

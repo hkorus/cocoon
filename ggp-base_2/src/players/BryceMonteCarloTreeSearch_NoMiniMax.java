@@ -90,7 +90,7 @@ public class BryceMonteCarloTreeSearch_NoMiniMax extends Subplayer{
 						System.out.println("Move not explored in tree: " + movesToMake);
 					}
 				}
-				log.info("move: " + move + " value: " + moveMinValue + " visited: " + totalVisits);
+				//log.info("move: " + move + " value: " + moveMinValue + " visited: " + totalVisits);
 				if(moveMinValue > bestValue){
 					
 					//check to make sure it is not a suicidal move
@@ -126,7 +126,7 @@ public class BryceMonteCarloTreeSearch_NoMiniMax extends Subplayer{
 						MachineState nextState = stateMachine.getNextState(acquiredState, jointMove);
 						
 						if ((stateMachine.isTerminal(nextState) && stateMachine.getGoal(nextState,role)==0)) {
-							System.out.println("Decided that move " + move + " was SUICIDAL");
+							//System.out.println("Decided that move " + move + " was SUICIDAL");
 							return true;
 						}
 					}

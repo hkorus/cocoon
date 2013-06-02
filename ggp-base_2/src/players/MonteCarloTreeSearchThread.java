@@ -95,7 +95,7 @@ public class MonteCarloTreeSearchThread extends Thread{
 				return gn;
 			}
 		}
-		double bestScore = 0;
+		double bestScore = -999999;
 		GameNode bestNode = startNode;
 		/* Choose the best child node based on a hueristic function selectFunction and then go down that branch looking for
 		 * an unexpanded node.
@@ -103,14 +103,37 @@ public class MonteCarloTreeSearchThread extends Thread{
 
 		//Collections.shuffle(startNode.children); //This might be needed in the future, but it runs the program out of memory if called repeatedly
 		for(GameNode gn : startNode.children){
-			double newScore = selectFunction(gn);
+			double newScore = selectFunction2(gn);
 			if(newScore > bestScore){
 				bestScore = newScore;
 				bestNode = gn;
 			}
 		}
+		//System.out.println("score: " + bestScore + " node : " + bestNode.state);
 		return select(bestNode);
 	}
+	
+	 public double selectFunction2(GameNode node){
+			try {
+				List<Role> roles = stateMachine.getRoles();
+				if (roles.size() > 1) {
+					List<Move> myLegalMoves = stateMachine.getLegalMoves(node.state, role);
+					//System.out.println(myLegalMoves);
+					
+					if (myLegalMoves.get(0).equals(stateMachine.getNoopMove())) {
+						//double value = (0- node.value / node.numVisits) +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);
+						//System.out.println(value);
+						double value = (new Random()).nextDouble();
+						return value;
+					}
+				}
+			} catch (MoveDefinitionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return node.value / node.numVisits +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
+		}
+
 
 	/**
 	 * Returns a heuristic to estimate the simulated value of the given node based on visits and its current value
@@ -143,7 +166,9 @@ public class MonteCarloTreeSearchThread extends Thread{
 		Random r = new Random();
 		double result = r.nextDouble();
 		//if(result<0.05) System.out.println("Starting State: " + startNode.state);
+		//System.out.println("state: " + startNode.state);
 		List<MachineState> nextStates = stateMachine.getNextStates(startNode.state);
+		//System.out.println("nextStates: " + nextStates);
 		//			if(result<0.05) {
 		//				System.out.println("Ending States: " + nextStates);
 		//				for(MachineState state : nextStates){

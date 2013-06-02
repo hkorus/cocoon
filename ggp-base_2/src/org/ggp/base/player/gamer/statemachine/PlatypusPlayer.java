@@ -118,7 +118,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
-			Thread.sleep(2500);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			//System.out.println("Done with subplayer!");
 			// e.printStackTrace();

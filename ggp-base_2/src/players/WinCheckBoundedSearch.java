@@ -107,7 +107,7 @@ public class WinCheckBoundedSearch extends Subplayer {
 		Collections.shuffle(moves);
 		for (Move move : moves) {
 			double result = guarMinScore(move, state, maxDepth, currentDepth+1);
-
+			
 			if (result > score) {
 				score = result;
 			}

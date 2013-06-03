@@ -23,6 +23,7 @@ public class MonteCarloTreeSearchThread extends Thread{
 	private MachineState initialState;
 	private long timeout;
 	private int numDepthCharges = 0;
+	private int roleIndex;
 	private static final boolean ASSUME_WORST_MOVE_FOR_OPPONENT = true;
 
 	private Map<MachineState,GameNode> stateValues = new HashMap<MachineState, GameNode>();
@@ -33,13 +34,18 @@ public class MonteCarloTreeSearchThread extends Thread{
 		this.role = role;
 		this.initialState = initialState;
 		this.timeout = timeout;
+		roleIndex = stateMachine.getRoleIndices().get(role);
 	}
+	
+	private boolean OUR_TURN;
 
 
 	public void run(){
 
 		GameNode currentNode = new GameNode(initialState);
 		try{
+			List<Move> moves = stateMachine.getLegalMoves(initialState, role);
+			OUR_TURN = moves.size()!=1;
 			while(true){
 				/* Loop over 4 stages until time is up */
 
@@ -92,7 +98,6 @@ public class MonteCarloTreeSearchThread extends Thread{
 		if(startNode.numVisits==0 || startNode.children.size() == 0) return startNode;
 		/* checks if any children have not yet been expanded; if so, returns them */
 		for(GameNode gn : startNode.children){
-
 			if(gn.numVisits==0) {
 				return gn;
 			}
@@ -105,9 +110,9 @@ public class MonteCarloTreeSearchThread extends Thread{
 
 		//Collections.shuffle(startNode.children); //This might be needed in the future, but it runs the program out of memory if called repeatedly
 
-		if (ASSUME_WORST_MOVE_FOR_OPPONENT || startNode.depth%(stateMachine.getRoles().size())==0) {
+		if (isPlayerTurn(startNode)) {
 			for(GameNode gn : startNode.children){
-				double newScore = selectFunction2(gn);
+				double newScore = selectFunction(gn);
 				if(newScore > bestScore){
 					bestScore = newScore;
 					bestNode = gn;
@@ -115,29 +120,39 @@ public class MonteCarloTreeSearchThread extends Thread{
 			}
 		} else {
 			//bestScore = (new Random()).nextDouble();
-			bestNode = startNode.children.get((new Random()).nextInt(startNode.children.size()));
+			if(!ASSUME_WORST_MOVE_FOR_OPPONENT)
+				bestNode = startNode.children.get((new Random()).nextInt(startNode.children.size()));
+			else {
+				for(GameNode gn : startNode.children){
+					double newScore = selectFunction2(gn);
+					if(newScore > bestScore){
+						bestScore = newScore;
+						bestNode = gn;
+					}
+				}	
+			}
 		}
 
 		//System.out.println("score: " + bestScore + " node : " + bestNode.state);
 		return select(bestNode, depth+1);
 	}
 
+	private boolean isPlayerTurn(GameNode node){
+		return node.depth%(stateMachine.getRoles().size())==(OUR_TURN ? 0 : 1);
+	}
+	
+	private static final int MCTS_CONSTANT = 50;
+
 	public double selectFunction2(GameNode node){
 		List<Role> roles = stateMachine.getRoles();
 		if (roles.size() > 1) {
 			//List<Move> myLegalMoves = stateMachine.getLegalMoves(node.state, role);
 			//System.out.println(myLegalMoves);
-
-			if (node.depth%(stateMachine.getRoles().size())!=0) {
-				double value;
-				if(ASSUME_WORST_MOVE_FOR_OPPONENT)
-					value = (0- node.value / node.numVisits) +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);
-				else 
-					value = (new Random()).nextDouble();
-				return value;
-			}
+			double value;
+			value = (0- node.value / node.numVisits) +MCTS_CONSTANT*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);
+			return value;
 		}
-		return node.value / node.numVisits +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
+		return node.value / node.numVisits +MCTS_CONSTANT*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
 	}
 
 
@@ -148,7 +163,7 @@ public class MonteCarloTreeSearchThread extends Thread{
 	 */
 
 	public double selectFunction(GameNode node){
-		return node.value / node.numVisits +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
+		return node.value / node.numVisits +MCTS_CONSTANT*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
 	}
 
 	/**

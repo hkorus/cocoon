@@ -21,22 +21,7 @@ public class WinCheckBoundedSearch extends Subplayer {
 		// TODO Auto-generated constructor stub
 	}
 
-	private class MoveResult{
-		int terminalScore = 0;
-		boolean reachedFinal = false;
-
-		MoveResult copy(){
-			MoveResult newSummary = new MoveResult();
-			newSummary.terminalScore = this.terminalScore;
-			newSummary.reachedFinal = this.reachedFinal;
-			return newSummary;
-		}
-
-		public String toString(){
-			String str = "" + terminalScore + " " + reachedFinal + ":";
-			return str;
-		}
-	}
+	
 
 	private boolean gameSolved_temp;
 

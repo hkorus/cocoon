@@ -78,13 +78,6 @@ public class PlatypusPlayer extends StateMachineGamer {
 			System.out.println("added new prop machine: " + i);
 			if(System.currentTimeMillis()>timeout) break;
 		}
-				
-		// if(getStateMachine().getRoles().size()==1){
-		// /* Single-player game, so try to brute force as much as possible */
-		// optimalSequence =
-		// solveSinglePlayerGame(getStateMachine(),getCurrentState());
-		// }
-
 	}
 
 	@Override
@@ -111,36 +104,36 @@ public class PlatypusPlayer extends StateMachineGamer {
 		/* Allocate 10% of time to basic minimax */
 		// Thread minimaxPlayerThread = new Thread(new MinimaxSubplayer)
 
-		Thread minimaxThread = new Thread(new WinCheckBoundedSearch(
-				getStateMachine(), getRole(), playerResult, getCurrentState(),
-				log));
-		minimaxThread.start();
-
-		try {
-			/* Sleep for 2 seconds less than the maximum time allowed */
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			//System.out.println("Done with subplayer!");
-			// e.printStackTrace();
-		}
+//		Thread minimaxThread = new Thread(new WinCheckBoundedSearch(
+//				getStateMachine(), getRole(), playerResult, getCurrentState(),
+//				log));
+//		minimaxThread.start();
+//
+//		try {
+//			/* Sleep for 2 seconds less than the maximum time allowed */
+//			Thread.sleep(2500);
+//		} catch (InterruptedException e) {
+//			//System.out.println("Done with subplayer!");
+//			// e.printStackTrace();
+//		}
 		/* Tell the thread searching for the best move it is done so it can exit */
-		minimaxThread.interrupt();
-		Move sureMove = playerResult.getSureMove();
-		log.info("--------Best Move after Minimiax--------");
-		if (sureMove == null) {
-			log.info("sure move is null: Minimax did not result in anything");
-		}else {
-			log.info("Sure move is " + playerResult.sureMove);
-			log.info("with the sure score of " + playerResult.getSureScore());
-			
-			if (playerResult.sureScore == 100 || playerResult.getGameSolved()){
-				long stop = System.currentTimeMillis();
-				log.info("Game solved!");
-				log.info("Choosing move "+ playerResult.sureMove + " after minimax preliminary search");
-				notifyObservers(new GamerSelectedMoveEvent(moves.get(0), sureMove, stop- start));
-				return sureMove;
-			}
-		}
+		//minimaxThread.interrupt();
+//		Move sureMove = playerResult.getSureMove();
+//		log.info("--------Best Move after Minimiax--------");
+//		if (sureMove == null) {
+//			log.info("sure move is null: Minimax did not result in anything");
+//		}else {
+//			log.info("Sure move is " + playerResult.sureMove);
+//			log.info("with the sure score of " + playerResult.getSureScore());
+//			
+//			if (playerResult.sureScore == 100 || playerResult.getGameSolved()){
+//				long stop = System.currentTimeMillis();
+//				log.info("Game solved!");
+//				log.info("Choosing move "+ playerResult.sureMove + " after minimax preliminary search");
+//				notifyObservers(new GamerSelectedMoveEvent(moves.get(0), sureMove, stop- start));
+//				return sureMove;
+//			}
+//		}
 		
 
 		Thread playerThread = new Thread(new BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded(

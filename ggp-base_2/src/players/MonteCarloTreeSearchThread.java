@@ -23,7 +23,7 @@ public class MonteCarloTreeSearchThread extends Thread{
 	private MachineState initialState;
 	private long timeout;
 	private int numDepthCharges = 0;
-	
+
 	private Map<MachineState,GameNode> stateValues = new HashMap<MachineState, GameNode>();
 
 
@@ -33,18 +33,18 @@ public class MonteCarloTreeSearchThread extends Thread{
 		this.initialState = initialState;
 		this.timeout = timeout;
 	}
-	
-	
+
+
 	public void run(){
-		
+
 		GameNode currentNode = new GameNode(initialState);
 		try{
 			while(true){
 				/* Loop over 4 stages until time is up */
-	
+
 				/* Select the next node to expand */
-				GameNode targetNode = select(currentNode);
-	
+				GameNode targetNode = select(currentNode, 0);
+
 				expand(targetNode);
 				/* Estimate value of leaf */
 				double simulatedValue= 0;
@@ -57,7 +57,7 @@ public class MonteCarloTreeSearchThread extends Thread{
 				backPropogate(targetNode,simulatedValue);
 				if(System.currentTimeMillis()>timeout) break;
 			}
-			
+
 		} catch (MoveDefinitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -85,10 +85,11 @@ public class MonteCarloTreeSearchThread extends Thread{
 	 * @return a GameNode to be expanded
 	 */
 
-	private GameNode select(GameNode startNode){
-		if(startNode.numVisits==0) return startNode;
-		/* checks if any children have not yet been expanded; if so, returns them */
+	private GameNode select(GameNode startNode, int depth){
+		startNode.depth = depth;
 		if(startNode.children==null) return startNode;
+		if(startNode.numVisits==0 || startNode.children.size() == 0) return startNode;
+		/* checks if any children have not yet been expanded; if so, returns them */
 		for(GameNode gn : startNode.children){
 
 			if(gn.numVisits==0) {
@@ -102,37 +103,61 @@ public class MonteCarloTreeSearchThread extends Thread{
 		 */
 
 		//Collections.shuffle(startNode.children); //This might be needed in the future, but it runs the program out of memory if called repeatedly
-		for(GameNode gn : startNode.children){
-			double newScore = selectFunction2(gn);
-			if(newScore > bestScore){
-				bestScore = newScore;
-				bestNode = gn;
-			}
-		}
-		//System.out.println("score: " + bestScore + " node : " + bestNode.state);
-		return select(bestNode);
-	}
-	
-	 public double selectFunction2(GameNode node){
-			try {
-				List<Role> roles = stateMachine.getRoles();
-				if (roles.size() > 1) {
-					List<Move> myLegalMoves = stateMachine.getLegalMoves(node.state, role);
-					//System.out.println(myLegalMoves);
-					
-					if (myLegalMoves.get(0).equals(stateMachine.getNoopMove())) {
-						//double value = (0- node.value / node.numVisits) +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);
-						//System.out.println(value);
-						double value = (new Random()).nextDouble();
-						return value;
-					}
+		
+		if (startNode.depth%(stateMachine.getRoles().size())==0) {
+			for(GameNode gn : startNode.children){
+				double newScore = selectFunction2(gn);
+				if(newScore > bestScore){
+					bestScore = newScore;
+					bestNode = gn;
 				}
-			} catch (MoveDefinitionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-			return node.value / node.numVisits +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
+		} else {
+			bestScore = (new Random()).nextDouble();
+			bestNode = startNode.children.get((new Random()).nextInt(startNode.children.size()));
 		}
+			
+		//System.out.println("score: " + bestScore + " node : " + bestNode.state);
+		return select(bestNode, depth+1);
+	}
+
+	private boolean isOpponentTurn(GameNode node) {
+		try {
+			List<Role> roles = stateMachine.getRoles();
+			if (roles.size() > 1) {
+				List<Move> myLegalMoves = stateMachine.getLegalMoves(node.state, role);
+
+				if (myLegalMoves.get(0).equals(stateMachine.getNoopMove())) {
+					return true;
+				}
+			}
+		} catch (MoveDefinitionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public double selectFunction2(GameNode node){
+		try {
+			List<Role> roles = stateMachine.getRoles();
+			if (roles.size() > 1) {
+				List<Move> myLegalMoves = stateMachine.getLegalMoves(node.state, role);
+				//System.out.println(myLegalMoves);
+
+				if (myLegalMoves.get(0).equals(stateMachine.getNoopMove())) {
+					//double value = (0- node.value / node.numVisits) +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);
+					//System.out.println(value);
+					double value = (new Random()).nextDouble();
+					return value;
+				}
+			}
+		} catch (MoveDefinitionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return node.value / node.numVisits +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
+	}
 
 
 	/**

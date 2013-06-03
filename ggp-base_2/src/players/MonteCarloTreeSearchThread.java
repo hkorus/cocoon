@@ -23,6 +23,7 @@ public class MonteCarloTreeSearchThread extends Thread{
 	private MachineState initialState;
 	private long timeout;
 	private int numDepthCharges = 0;
+	private static final boolean ASSUME_WORST_MOVE_FOR_OPPONENT = true;
 
 	private Map<MachineState,GameNode> stateValues = new HashMap<MachineState, GameNode>();
 
@@ -103,8 +104,8 @@ public class MonteCarloTreeSearchThread extends Thread{
 		 */
 
 		//Collections.shuffle(startNode.children); //This might be needed in the future, but it runs the program out of memory if called repeatedly
-		
-		if (startNode.depth%(stateMachine.getRoles().size())==0) {
+
+		if (ASSUME_WORST_MOVE_FOR_OPPONENT || startNode.depth%(stateMachine.getRoles().size())==0) {
 			for(GameNode gn : startNode.children){
 				double newScore = selectFunction2(gn);
 				if(newScore > bestScore){
@@ -113,48 +114,28 @@ public class MonteCarloTreeSearchThread extends Thread{
 				}
 			}
 		} else {
-			bestScore = (new Random()).nextDouble();
+			//bestScore = (new Random()).nextDouble();
 			bestNode = startNode.children.get((new Random()).nextInt(startNode.children.size()));
 		}
-			
+
 		//System.out.println("score: " + bestScore + " node : " + bestNode.state);
 		return select(bestNode, depth+1);
 	}
 
-	private boolean isOpponentTurn(GameNode node) {
-		try {
-			List<Role> roles = stateMachine.getRoles();
-			if (roles.size() > 1) {
-				List<Move> myLegalMoves = stateMachine.getLegalMoves(node.state, role);
-
-				if (myLegalMoves.get(0).equals(stateMachine.getNoopMove())) {
-					return true;
-				}
-			}
-		} catch (MoveDefinitionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
-	}
-
 	public double selectFunction2(GameNode node){
-		try {
-			List<Role> roles = stateMachine.getRoles();
-			if (roles.size() > 1) {
-				List<Move> myLegalMoves = stateMachine.getLegalMoves(node.state, role);
-				//System.out.println(myLegalMoves);
+		List<Role> roles = stateMachine.getRoles();
+		if (roles.size() > 1) {
+			//List<Move> myLegalMoves = stateMachine.getLegalMoves(node.state, role);
+			//System.out.println(myLegalMoves);
 
-				if (myLegalMoves.get(0).equals(stateMachine.getNoopMove())) {
-					//double value = (0- node.value / node.numVisits) +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);
-					//System.out.println(value);
-					double value = (new Random()).nextDouble();
-					return value;
-				}
+			if (node.depth%(stateMachine.getRoles().size())!=0) {
+				double value;
+				if(ASSUME_WORST_MOVE_FOR_OPPONENT)
+					value = (0- node.value / node.numVisits) +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);
+				else 
+					value = (new Random()).nextDouble();
+				return value;
 			}
-		} catch (MoveDefinitionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return node.value / node.numVisits +100*Math.sqrt(2*Math.log(node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
 	}

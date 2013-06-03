@@ -66,11 +66,11 @@ public class FirstPropNetStateMachine extends StateMachine {
 	 * your discretion.
 	 */
 	@Override
-	public synchronized void initialize(List<Gdl> description) {
+	public   void initialize(List<Gdl> description) {
 		try{
 			this.description = description;
 			propNet = OptimizingPropNetFactory.create(description);
-			propNet.renderToFile("LastGamePlayedPropNet" + System.currentTimeMillis() + "_" + this.hashCode() + ".dot");
+			//propNet.renderToFile("LastGamePlayedPropNet" + System.currentTimeMillis() + "_" + this.hashCode() + ".dot");
 			roles = propNet.getRoles();
 			ordering = getOrdering(propNet);
 			for(Proposition p : ordering){
@@ -188,7 +188,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 	 * of the terminal proposition for the state.
 	 */
 	@Override
-	public synchronized boolean isTerminal(MachineState state) {
+	public   boolean isTerminal(MachineState state) {
 		markBases(state);
 		boolean result = propMarkPRecursive(propNet.getTerminalProposition());
 		clearPropNet();
@@ -302,7 +302,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 	 * GoalDefinitionException because the goal is ill-defined. 
 	 */
 	@Override
-	public synchronized int getGoal(MachineState state, Role role)
+	public   int getGoal(MachineState state, Role role)
 			throws GoalDefinitionException {
 		markBases(state);
 		Set<Proposition> goalProps = propNet.getGoalPropositions().get(role);
@@ -334,7 +334,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 	 * and then computing the resulting state.
 	 */
 	@Override
-	public synchronized MachineState getInitialState() {
+	public   MachineState getInitialState() {
 		propNet.getInitProposition().setValue(true);
 		for(Proposition p: ordering){
 			p.setValue(propMarkPNonRecursive(p.getSingleInput()));
@@ -348,7 +348,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 	 * Computes the legal moves for role in state.
 	 */
 	@Override
-	public synchronized List<Move> getLegalMoves(MachineState state, Role role)
+	public   List<Move> getLegalMoves(MachineState state, Role role)
 			throws MoveDefinitionException {
 
 		//.out.println("Getting Legals for "+state.toString()+" and Role: "+role.toString());
@@ -375,7 +375,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 	 * @param role
 	 * @return
 	 */
-	public synchronized List<List<Move>> getLegalMoves_Factoring(MachineState state, Role role){
+	public   List<List<Move>> getLegalMoves_Factoring(MachineState state, Role role){
 		List<List<Move>> listMoves = new ArrayList<List<Move>>();
 		markBases(state);
 		Set<Proposition> legals = propNet.getLegalPropositions().get(role);
@@ -434,13 +434,47 @@ public class FirstPropNetStateMachine extends StateMachine {
 		}
 		return jointMoves;
 	}
+	
+	//pass in factor to play on
+		//get next state for factor
+		public synchronized MachineState getRandomNextStateFromFactor(MachineState state, List<Move> projectedJointMove, int factorIndex) throws TransitionDefinitionException, MoveDefinitionException {
+
+			for (int moveIndex = 0; moveIndex < projectedJointMove.size(); moveIndex++) {
+				if (projectedJointMove.get(moveIndex) == getFakeNoopMove()) {
+					projectedJointMove.set(moveIndex, getActualMove(state, factorIndex, moveIndex));
+				}
+			}
+
+			return getNextState(state, projectedJointMove);
+
+		}
+
+
+		//search through legalJointMoves for all factors != factorIndex
+		private Move getActualMove(MachineState state, int factorIndex, int moveIndex) throws MoveDefinitionException {
+
+			List<List<List<Move>>> legalJointMoves = getLegalJointMoves_Factoring(state);
+			for (int factor = 0; factor < getNumFactors(); factor++) {
+				if (factor != factorIndex) {
+
+					for (List<Move> jointMove : legalJointMoves.get(factor)) {
+						if (jointMove.get(moveIndex) != getFakeNoopMove()) {
+							return jointMove.get(moveIndex);
+						}
+					}
+
+				}
+			}
+			return getFakeNoopMove();
+
+		}
 
 
 	/**
 	 * Computes the next state given state and the list of moves.
 	 */
 	@Override
-	public synchronized MachineState getNextState(MachineState state, List<Move> moves)
+	public   MachineState getNextState(MachineState state, List<Move> moves)
 			throws TransitionDefinitionException {
 		//(moves.toString() + " "+state.toString());
 		if(moves == null) {
@@ -566,7 +600,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 	 * @return The order in which the truth values of propositions need to be set.
 	 */
 
-	public synchronized List<Proposition> getOrdering(PropNet prop)
+	public   List<Proposition> getOrdering(PropNet prop)
 	{
 		// List to contain the topological ordering.
 		List<Proposition> order = new LinkedList<Proposition>();
@@ -605,7 +639,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 
 	/* Already implemented for you */
 	@Override
-	public synchronized List<Role> getRoles() {
+	public   List<Role> getRoles() {
 		return roles;
 	}
 
@@ -640,7 +674,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 	 * @param p
 	 * @return a PropNetMove
 	 */
-	public synchronized static Move getMoveFromProposition(Proposition p)
+	public   static Move getMoveFromProposition(Proposition p)
 	{
 		return new Move(p.getName().get(1));
 	}
@@ -663,7 +697,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 	 * You need not use this method!
 	 * @return PropNetMachineState
 	 */	
-	public synchronized MachineState getStateFromBase()
+	public   MachineState getStateFromBase()
 	{
 		Set<GdlSentence> contents = new HashSet<GdlSentence>();
 		for (Proposition p : propNet.getBasePropositions().values())

@@ -27,8 +27,8 @@ import players.RandomSubplayer;
 import players.TerminalStateProximity;
 import players.ThreadPlayerResult;
 
-public class PlatypusPlayer extends StateMachineGamer {
 
+public class PlatypusPlayer extends StateMachineGamer {
 	private static final String PLAYER_NAME = "Platypus";
 
 	private List<Move> optimalSequence = null;
@@ -118,21 +118,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 
 
 
-	private Move getRandomMove(StateMachine stateMachine) throws MoveDefinitionException, TransitionDefinitionException{
-		List<Move> allLegalMoves = stateMachine.getLegalMoves(getCurrentState(), getRole());
-		NUM_PLAYERS = getStateMachine().getRoles().size();
-		Move bestMove = allLegalMoves.get(new Random().nextInt(allLegalMoves.size()));
-		for(Move move : allLegalMoves){
-			boolean moveIsBad = false;
-			for(List<Move> allJointMoves : stateMachine.getLegalJointMoves(getCurrentState(),getRole(),move)){
-				if(isSuicidal(getCurrentState(),move,stateMachine.getNextState(getCurrentState(),allJointMoves))){
-					moveIsBad= true; break;
-				}
-			}
-			if(!moveIsBad) bestMove = move;
-		}
-		return bestMove;
-	}
+
 
 
 
@@ -147,10 +133,10 @@ public class PlatypusPlayer extends StateMachineGamer {
 
 		long start = System.currentTimeMillis();
 		playerResult.setBestMoveSoFar(null);
-		
+
 
 		StateMachine safeMachine = getSafeStateMachine();
-		
+
 		// LAUNCH 1 thread with monte carlo tree search on safe machine.
 		ThreadPlayerResult randomPlayerResult = new ThreadPlayerResult();
 		Thread randomPlayerThread = new Thread(new RandomSubplayer(
@@ -158,26 +144,29 @@ public class PlatypusPlayer extends StateMachineGamer {
 				log, randomPlayerResult));
 		randomPlayerThread.run();
 		log.info("Starting random player!");
-		
+
 		ThreadPlayerResult nonLosingPlayerResult = new ThreadPlayerResult();
 		Thread nonlosingPlayerThread = new Thread(new NonLosingSubplayer(
 				safeMachine, getRole(), playerResult, getCurrentState(),
 				log, nonLosingPlayerResult));
 		nonlosingPlayerThread.run();
 		log.info("Starting nonlosing subplayer");
-		
-		
+
+		Thread playerThread = null;
+		ThreadPlayerResult mctsSubplayerFactored = new ThreadPlayerResult();
+		List<Move> ALLMOVES = null;
+		List<List<Move>> moves = null;
 		if (propNetSafe){
 			try{
 				FirstPropNetStateMachine stateMachine = (FirstPropNetStateMachine) getStateMachine();
-				List<List<Move>> moves = stateMachine.getLegalMoves_Factoring(getCurrentState(),
+				moves = stateMachine.getLegalMoves_Factoring(getCurrentState(),
 						getRole());
 				System.out.println("LegalMoves: " + moves);
 
 				List<List<List<Move>>> jointMoves = stateMachine.getLegalJointMoves_Factoring(getCurrentState());
 				System.out.println("Legal Joint Moves: " + jointMoves);
 
-				List<Move> ALLMOVES = stateMachine.getLegalMoves(getCurrentState(),getRole());
+				ALLMOVES = stateMachine.getLegalMoves(getCurrentState(),getRole());
 
 				/* Check if montecarlo is a good idea */
 				long depthStartTime = System.currentTimeMillis();
@@ -209,48 +198,84 @@ public class PlatypusPlayer extends StateMachineGamer {
 					return bestMove;
 				}
 
-				Thread playerThread = new Thread(new BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded(
+				playerThread = new Thread(new BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded(
 						getStateMachine(), getRole(), playerResult, getCurrentState(),
 						log, stateMachines, timeout-3000));
 				log.info("Starting Monte Carlo");
 				playerThread.start();
-				try {
-					/* Sleep for 1 secondd less than the maximum time allowed */
-					long sleeptime = timeout - System.currentTimeMillis() - 2000 - 1000;
-					log.info("PAUSING PLATYPUS FOR " + sleeptime);
-					Thread.sleep(sleeptime);
-				} catch (InterruptedException e) {
-					log.info("Done with subplayer!");
-					// e.printStackTrace();
-				}
-				/* Tell the thread searching for the best move it is done so it can exit */
-				//playerThread.interrupt();
-				try {
-					/* Sleep for 2 seconds less than the maximum time allowed */
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					log.info("Done with subplayer!");
-					// e.printStackTrace();
-				}
-				Move bestMove = playerResult.getBestMoveSoFar();
-				log.info("--------Best Move after Monte Carlo--------");
-				if (bestMove == null) {
-					bestMove = ALLMOVES.get(new Random().nextInt(ALLMOVES.size()));
-					log.info("CHOSE RANDOM");
-				}
-				long stop = System.currentTimeMillis();
-				log.info("best move: " + bestMove);
-				notifyObservers(new GamerSelectedMoveEvent(moves.get(0), bestMove, stop
-						- start));
-				//log.info("Time left: " + timeout-)
-				return bestMove;
-			}catch(Exception e){
-				System.err.println("ERROR IN SELECT MOVE:");
-				System.err.println(e.getMessage());
 
+			}catch(Exception e){
+				System.err.println("ERROR caught in Platypus IN MCTS section (factored)");
+				System.err.println(e.getMessage());
+				mctsSubplayerFactored.completed = false;
 			}
+		}else{
+			log.warning("PROP NET LABELED AS NOT WORKING!");
 		}
-		return null;
+
+
+		//RUN ALL OF THE THREADS!!!
+
+
+
+		try {
+			/* Sleep for 1 secondd less than the maximum time allowed */
+			long sleeptime = timeout - System.currentTimeMillis() - 2000 - 1000;
+			log.info("RUNNING THREADS, PAUSING PLATYPUS FOR " + sleeptime);
+			Thread.sleep(sleeptime);
+		} catch (InterruptedException e) {
+			log.info("Exception in Platypus while waiting for threads. Done with subplayer!");
+		}
+		/* Tell the thread searching for the best move it is done so it can exit */
+
+		if (playerThread != null){
+			playerThread.interrupt();
+		}
+		if (randomPlayerThread != null){
+			randomPlayerThread.interrupt();
+		}
+		if (nonlosingPlayerThread != null){
+			nonlosingPlayerThread.interrupt();
+		}
+
+
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			log.info("Done with subplayer!");
+			// e.printStackTrace();
+		}
+
+		if (mctsSubplayerFactored.completed){
+			mctsSubplayerFactored.chosenMove = playerResult.getBestMoveSoFar();
+		}
+		
+		Move chosenMove = null;
+		log.info("-------------------MOVE RESULT----------------");
+		if (mctsSubplayerFactored.completed){
+			log.info("mcts factored subplayer completed: chosen move is "+ mctsSubplayerFactored.chosenMove);
+			chosenMove = mctsSubplayerFactored.chosenMove;
+		}else if(nonLosingPlayerResult.completed){
+			log.info("non losing player completed: chosen move is " + nonLosingPlayerResult.chosenMove);
+			chosenMove = nonLosingPlayerResult.chosenMove;
+		}else if(randomPlayerResult.completed){
+			log.info("random player completed: chosen move is "+ randomPlayerResult.chosenMove);
+			chosenMove = randomPlayerResult.chosenMove;
+		}
+		
+		
+		
+		long stop = System.currentTimeMillis();
+		
+		
+		
+		
+		notifyObservers(new GamerSelectedMoveEvent(moves.get(0), chosenMove, stop
+				- start));
+		//log.info("Time left: " + timeout-)
+		return chosenMove;
+
 	}
 
 

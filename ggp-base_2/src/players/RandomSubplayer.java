@@ -34,6 +34,7 @@ public class RandomSubplayer extends Subplayer {
 			threadResult.completed = false;
 		} catch (Exception e){
 			System.err.println("RandomSubplayer with some error!");
+			threadResult.completed = false;
 			System.err.println(e.getMessage());
 		}
 	}

@@ -88,7 +88,8 @@ public class PlayerResult {
 		gameSolved = false;
 		sureMove = null;
 		sureScore = Double.MIN_VALUE;
-
+		minimaxDepth = 0;
+		
 		gameSolved_temp = false;
 		bestMoveSoFar = null;
 		bestMoveScore = Double.MIN_VALUE;

@@ -14,7 +14,7 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
-import players.GameNode;
+import platypus.utils.Utils;
 
 public class MonteCarloTreeSearchThread extends Thread{
 
@@ -55,7 +55,7 @@ public class MonteCarloTreeSearchThread extends Thread{
 				expand(targetNode);
 				/* Estimate value of leaf */
 				double simulatedValue= 0;
-				if(numDepthCharges==0) System.out.println(stateMachine); // slows down the thread; apparently creating them too quickly is bad?
+				if(numDepthCharges==0) Utils.timeout(50);
 				MachineState simulatedTerminalState = stateMachine.performDepthCharge(targetNode.state, null);
 				simulatedValue+= stateMachine.getGoal(simulatedTerminalState, role);
 				//System.out.println("Terminal State: " + simulatedTerminalState);

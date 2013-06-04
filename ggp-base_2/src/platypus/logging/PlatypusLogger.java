@@ -1,9 +1,9 @@
 package platypus.logging;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -22,7 +22,7 @@ public class PlatypusLogger{
 	            @Override
 	            public String format(LogRecord arg0) {
 	                StringBuilder b = new StringBuilder();
-	                b.append(System.getProperty("line.spearator"));
+	                b.append("\n");
 	                b.append("[");
 	                b.append(arg0.getLevel());
 	                b.append("] ");
@@ -35,10 +35,16 @@ public class PlatypusLogger{
 	        };
 			
 			if (PlatypusConstants.writeLogToFile){
-				logger.addHandler(new FileHandler("logs/platypus/"+name+".log"));
+				String filename = "logs/platypus/"+name+".log";
+				Handler h = new FileHandler(filename);
+				logger.info("Adding log at "+filename);
+				h.setFormatter(formatter);
+				logger.addHandler(h);
 			}
 			if (PlatypusConstants.writeLogToConsole){
-				logger.addHandler(new PlatypusConsole());
+				Handler h= new PlatypusConsole();
+				h.setFormatter(formatter);
+				logger.addHandler(h);
 			}
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block

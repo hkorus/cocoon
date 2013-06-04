@@ -74,19 +74,19 @@ public class FirstPropNetStateMachine extends StateMachine {
 			roles = propNet.getRoles();
 			ordering = getOrdering(propNet);
 			for(Proposition p : ordering){
-				//System.out.println(p.getName());
+				////system.out.println(p.getName());
 			}
 			//Set<Set<Component>> factors = factorPropNet();
-			System.out.println("PropNetStateMachine: starting to factor...");
+			//system.out.println("PropNetStateMachine: starting to factor...");
 			factorList = factorPropNet3();
 
 			noopMove = findNoopMove(factorList);
 
-			System.out.println("Noop Move: " + noopMove);
+			//system.out.println("Noop Move: " + noopMove);
 
-			System.out.println("Found "+factorList.size()+" factors.");
+			//system.out.println("Found "+factorList.size()+" factors.");
 			for(Collection<Proposition> factor : factorList){
-				System.out.println("Factor " + factor);
+				//system.out.println("Factor " + factor);
 			}
 
 		}catch(InterruptedException ex){
@@ -149,7 +149,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 					return p.getValue();
 				}else{
 					if(p.getInputs().size() == 0){
-						System.out.println("Returning false: "+((Proposition)p).getName());
+						//system.out.println("Returning false: "+((Proposition)p).getName());
 						return false; // more legals!!!!
 					}
 					return propMarkP(p.getSingleInput(), isRecur);
@@ -207,7 +207,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 		Component bottomOr = findBottomOr(propNet.getTerminalProposition());
 
 		if(bottomOr==null){
-			System.out.println("Could not find bottom Or so unfactorable.");
+			//system.out.println("Could not find bottom Or so unfactorable.");
 			/* Game is unfactorable, so return a single list containing all input propositions */
 			List<Proposition> finalList = new ArrayList<Proposition>();
 			finalList.addAll(propNet.getInputPropositions().values());
@@ -216,10 +216,10 @@ public class FirstPropNetStateMachine extends StateMachine {
 			return factorList;
 
 		} else {
-			System.out.println("Found bottom Or with " + bottomOr.getInputs().size() + " inputs.");
+			//system.out.println("Found bottom Or with " + bottomOr.getInputs().size() + " inputs.");
 			/* Game is factorable, so create a new list of input propositions for each branch from the bottom Or. */
 			for(Component parent : bottomOr.getInputs()){
-				System.out.println("factoring beginning with " + parent);
+				//system.out.println("factoring beginning with " + parent);
 				Collection<Proposition> factorInputs = new HashSet<Proposition>();
 				Set<Component> visitedComponents = new HashSet<Component>();
 				getFactorInputs(parent, factorInputs, visitedComponents);
@@ -239,13 +239,13 @@ public class FirstPropNetStateMachine extends StateMachine {
 					}
 
 					if(!factorIsValid){
-						System.out.println("Found invalid factor; ignoring.");
+						//system.out.println("Found invalid factor; ignoring.");
 					} else {
-						System.out.println("Added new factor.");
+						//system.out.println("Added new factor.");
 						factorList.add(factorInputs);
 					}
 				} else {
-					System.out.println("Ignoring factor of size 0.");
+					//system.out.println("Ignoring factor of size 0.");
 				}
 			}
 			return factorList;
@@ -323,7 +323,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 			throw new GoalDefinitionException(state, role);
 		}
 		int val = getGoalValue(goal);
-		//System.out.println("Goal value: "+val);
+		////system.out.println("Goal value: "+val);
 		clearPropNet();
 		return val;
 	}
@@ -363,7 +363,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 				listMoves.add(getMoveFromProposition(legal));
 			}
 		}
-		//System.out.println("Legals: "+listMoves.size());
+		////system.out.println("Legals: "+listMoves.size());
 		clearPropNet();
 		return listMoves;
 	}
@@ -399,7 +399,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 		}
 		clearPropNet();
 
-		//System.out.println("Role: " + role + " has " + listMoves);
+		////system.out.println("Role: " + role + " has " + listMoves);
 		return listMoves;
 	}
 
@@ -478,8 +478,8 @@ public class FirstPropNetStateMachine extends StateMachine {
 			throws TransitionDefinitionException {
 		//(moves.toString() + " "+state.toString());
 		if(moves == null) {
-			System.out.println("Moves is null :(");
-			System.out.println(state);
+			//system.out.println("Moves is null :(");
+			//system.out.println(state);
 			return state; //not sure exactly what this should be
 		}
 
@@ -498,7 +498,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 		//}
 		MachineState nextState = getStateFromBase();
 		//if(nextState)
-		//System.out.println("Next State Contents:"+nextState.getContents().toString());
+		////system.out.println("Next State Contents:"+nextState.getContents().toString());
 		clearPropNet();
 		String stateString = nextState.getContents().toString();
 		return nextState;

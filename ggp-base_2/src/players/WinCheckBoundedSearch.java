@@ -40,7 +40,7 @@ public class WinCheckBoundedSearch extends Subplayer {
 					double result = guarMinScore(move, currentState, maxDepth, 1);
 					if (result > score) {
 						score = result;
-						System.out.println("best move so far: "+ move+ "(" + score+")");
+						System.out.println("Minimax: best move so far: "+ move+ "(" + score+")");
 						bestMoveSoFar = move;
 						playerResult.setSureMove(bestMoveSoFar);
 						playerResult.setSureScore(score);
@@ -52,6 +52,7 @@ public class WinCheckBoundedSearch extends Subplayer {
 				}
 
 				maxDepth++;
+				playerResult.minimaxDepth = maxDepth;
 			}
 
 

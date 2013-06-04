@@ -86,7 +86,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 
 			System.out.println("Found "+factorList.size()+" factors.");
 			for(Collection<Proposition> factor : factorList){
-				System.out.println("Factor " + factor);
+				//System.out.println("Factor " + factor);
 			}
 
 		}catch(InterruptedException ex){

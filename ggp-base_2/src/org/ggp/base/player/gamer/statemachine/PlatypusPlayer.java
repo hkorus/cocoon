@@ -9,7 +9,6 @@ import org.ggp.base.apps.player.detail.DetailPanel;
 import org.ggp.base.apps.player.detail.SimpleDetailPanel;
 import org.ggp.base.player.gamer.event.GamerSelectedMoveEvent;
 import org.ggp.base.player.gamer.exception.GamePreviewException;
-import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.game.Game;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -21,13 +20,12 @@ import org.ggp.base.util.statemachine.implementation.propnet.FirstPropNetStateMa
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 import platypus.logging.PlatypusLogger;
-import platypus.utils.StateSave;
-import players.BryceMonteCarloTreeSearch;
-import players.BryceMonteCarloTreeSearch_NoMiniMax;
 import players.BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded;
+import players.NonLosingSubplayer;
 import players.PlayerResult;
+import players.RandomSubplayer;
 import players.TerminalStateProximity;
-import players.WinCheckBoundedSearch;
+import players.ThreadPlayerResult;
 
 public class PlatypusPlayer extends StateMachineGamer {
 
@@ -36,6 +34,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 	private List<Move> optimalSequence = null;
 	private PlayerResult playerResult = new PlayerResult();
 	private TerminalStateProximity terminalStateProximity;
+	private boolean propNetSafe = true;
 
 	private long propNetCreationTime;
 	private int NUM_PLAYERS = 1;
@@ -61,9 +60,9 @@ public class PlatypusPlayer extends StateMachineGamer {
 		return firstMachine;
 	}
 
-
-
-
+	public StateMachine getSafeStateMachine(){
+		return new ProverStateMachine();
+	}
 
 
 
@@ -72,9 +71,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 
 	@Override
 
-	public void stateMachineMetaGame(long timeout)
-			throws TransitionDefinitionException, MoveDefinitionException,
-			GoalDefinitionException {
+	public void stateMachineMetaGame(long timeout){
 
 
 		//terminalStateProximity = new TerminalStateProximity(timeout - 1000,
@@ -83,36 +80,59 @@ public class PlatypusPlayer extends StateMachineGamer {
 		//create one propnet to get a time estimate
 
 		long startTime = System.currentTimeMillis();
-		FirstPropNetStateMachine first = new FirstPropNetStateMachine();
-		first.initialize(((FirstPropNetStateMachine) stateMachines.get(0)).getDescription());
-		long duration = System.currentTimeMillis() - startTime;
-		System.out.println("Took " + duration + " to initialize propnet #" + 1);
-		stateMachines.add(first);
-		System.out.println("added new prop machine: " + 1);
-		propNetCreationTime = System.currentTimeMillis() - startTime;
+		StateMachine safeStateMachine = getSafeStateMachine();
+		if (propNetSafe){
+			try{
+				FirstPropNetStateMachine first = new FirstPropNetStateMachine();
+				first.initialize(((FirstPropNetStateMachine) stateMachines.get(0)).getDescription());
+				long duration = System.currentTimeMillis() - startTime;
+				System.out.println("Took " + duration + " to initialize propnet #" + 1);
+				stateMachines.add(first);
+				System.out.println("added new prop machine: " + 1);
+				propNetCreationTime = System.currentTimeMillis() - startTime;
 
-		if(propNetCreationTime==0) propNetCreationTime = 1;
-		long estimatedThreadsToCreate = (timeout-System.currentTimeMillis())/propNetCreationTime;
-		System.out.println("Estimating I can create " + estimatedThreadsToCreate + " propNets in given time.");
+				if(propNetCreationTime==0) propNetCreationTime = 1;
+				long estimatedThreadsToCreate = (timeout-System.currentTimeMillis())/propNetCreationTime;
+				System.out.println("Estimating I can create " + estimatedThreadsToCreate + " propNets in given time.");
 
-		for(int i=2; i<Math.min(BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded.MAX_NUM_THREADS,estimatedThreadsToCreate); i++){
-			first = new FirstPropNetStateMachine();
-			startTime = System.currentTimeMillis();
-			first.initialize(((FirstPropNetStateMachine) stateMachines.get(0)).getDescription());
-			duration = System.currentTimeMillis() - startTime;
-			System.out.println("Took " + duration + " to initialize propnet #" + i);
-			stateMachines.add(first);
-			System.out.println("added new prop machine: " + i);
-			if(System.currentTimeMillis()>timeout) break;
+				for(int i=2; i<Math.min(BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded.MAX_NUM_THREADS,estimatedThreadsToCreate); i++){
+					first = new FirstPropNetStateMachine();
+					startTime = System.currentTimeMillis();
+					first.initialize(((FirstPropNetStateMachine) stateMachines.get(0)).getDescription());
+					duration = System.currentTimeMillis() - startTime;
+					System.out.println("Took " + duration + " to initialize propnet #" + i);
+					stateMachines.add(first);
+					System.out.println("added new prop machine: " + i);
+					if(System.currentTimeMillis()>timeout) break;
+				}
+				System.out.println("Finished making propnets.");
+			}catch(Exception e){
+				System.err.println("OK, but error caught in METAGAME");
+				e.getStackTrace();
+				propNetSafe= false;
+			}
 		}
-		System.out.println("Finished making propnets.");
 	}
 
 
 
 
 
-
+	private Move getRandomMove(StateMachine stateMachine) throws MoveDefinitionException, TransitionDefinitionException{
+		List<Move> allLegalMoves = stateMachine.getLegalMoves(getCurrentState(), getRole());
+		NUM_PLAYERS = getStateMachine().getRoles().size();
+		Move bestMove = allLegalMoves.get(new Random().nextInt(allLegalMoves.size()));
+		for(Move move : allLegalMoves){
+			boolean moveIsBad = false;
+			for(List<Move> allJointMoves : stateMachine.getLegalJointMoves(getCurrentState(),getRole(),move)){
+				if(isSuicidal(getCurrentState(),move,stateMachine.getNextState(getCurrentState(),allJointMoves))){
+					moveIsBad= true; break;
+				}
+			}
+			if(!moveIsBad) bestMove = move;
+		}
+		return bestMove;
+	}
 
 
 
@@ -121,91 +141,119 @@ public class PlatypusPlayer extends StateMachineGamer {
 	public Move stateMachineSelectMove(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
+
+
+
+
 		long start = System.currentTimeMillis();
 		playerResult.setBestMoveSoFar(null);
+		
 
+		StateMachine safeMachine = getSafeStateMachine();
+		
+		// LAUNCH 1 thread with monte carlo tree search on safe machine.
+		ThreadPlayerResult randomPlayerResult = new ThreadPlayerResult();
+		Thread randomPlayerThread = new Thread(new RandomSubplayer(
+				safeMachine, getRole(), playerResult, getCurrentState(),
+				log, randomPlayerResult));
+		randomPlayerThread.run();
+		log.info("Starting random player!");
+		
+		ThreadPlayerResult nonLosingPlayerResult = new ThreadPlayerResult();
+		Thread nonlosingPlayerThread = new Thread(new NonLosingSubplayer(
+				safeMachine, getRole(), playerResult, getCurrentState(),
+				log, nonLosingPlayerResult));
+		nonlosingPlayerThread.run();
+		log.info("Starting nonlosing subplayer");
 		
 		
-		
-		
-		FirstPropNetStateMachine stateMachine = (FirstPropNetStateMachine) getStateMachine();
-		List<List<Move>> moves = stateMachine.getLegalMoves_Factoring(getCurrentState(),
-				getRole());
-		System.out.println("LegalMoves: " + moves);
+		if (propNetSafe){
+			try{
+				FirstPropNetStateMachine stateMachine = (FirstPropNetStateMachine) getStateMachine();
+				List<List<Move>> moves = stateMachine.getLegalMoves_Factoring(getCurrentState(),
+						getRole());
+				System.out.println("LegalMoves: " + moves);
 
-		List<List<List<Move>>> jointMoves = stateMachine.getLegalJointMoves_Factoring(getCurrentState());
-		System.out.println("Legal Joint Moves: " + jointMoves);
+				List<List<List<Move>>> jointMoves = stateMachine.getLegalJointMoves_Factoring(getCurrentState());
+				System.out.println("Legal Joint Moves: " + jointMoves);
 
-		List<Move> ALLMOVES = stateMachine.getLegalMoves(getCurrentState(),getRole());
-		
-		/* Check if montecarlo is a good idea */
-		long depthStartTime = System.currentTimeMillis();
-		stateMachine.performDepthCharge(getCurrentState(), null);
-		long depthStopTime = System.currentTimeMillis();
-		
-		long netTime = depthStopTime-depthStartTime;
-		System.out.println("Depth charge Time: " + netTime);
-		if(netTime*50>(timeout-System.currentTimeMillis()-2500)){
-			
-			/*MonteCarlo is a bad idea.  Just avoid losing. */
-			List<Move> allLegalMoves = stateMachine.getLegalMoves(getCurrentState(), getRole());
-			NUM_PLAYERS = getStateMachine().getRoles().size();
-			Move bestMove = allLegalMoves.get(new Random().nextInt(allLegalMoves.size()));
-			for(Move move : allLegalMoves){
-				boolean moveIsBad = false;
-				for(List<Move> allJointMoves : stateMachine.getLegalJointMoves(getCurrentState(),getRole(),move)){
-					if(isSuicidal(getCurrentState(),move,stateMachine.getNextState(getCurrentState(),allJointMoves))){
-						moveIsBad= true; break;
+				List<Move> ALLMOVES = stateMachine.getLegalMoves(getCurrentState(),getRole());
+
+				/* Check if montecarlo is a good idea */
+				long depthStartTime = System.currentTimeMillis();
+				stateMachine.performDepthCharge(getCurrentState(), null);
+				long depthStopTime = System.currentTimeMillis();
+
+				long netTime = depthStopTime-depthStartTime;
+				System.out.println("Depth charge Time: " + netTime);
+				if(netTime*50>(timeout-System.currentTimeMillis()-2500)){
+
+					/*MonteCarlo is a bad idea.  Just avoid losing. */
+					List<Move> allLegalMoves = stateMachine.getLegalMoves(getCurrentState(), getRole());
+					NUM_PLAYERS = getStateMachine().getRoles().size();
+					Move bestMove = allLegalMoves.get(new Random().nextInt(allLegalMoves.size()));
+					for(Move move : allLegalMoves){
+						boolean moveIsBad = false;
+						for(List<Move> allJointMoves : stateMachine.getLegalJointMoves(getCurrentState(),getRole(),move)){
+							if(isSuicidal(getCurrentState(),move,stateMachine.getNextState(getCurrentState(),allJointMoves))){
+								moveIsBad= true; break;
+							}
+						}
+						if(!moveIsBad) bestMove = move;
 					}
+					long stop = System.currentTimeMillis();
+					log.info("Monte Carlo Deemed Bad Idea");
+					log.info("best move: " + bestMove);
+					notifyObservers(new GamerSelectedMoveEvent(moves.get(0), bestMove, stop
+							- start));
+					return bestMove;
 				}
-				if(!moveIsBad) bestMove = move;
+
+				Thread playerThread = new Thread(new BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded(
+						getStateMachine(), getRole(), playerResult, getCurrentState(),
+						log, stateMachines, timeout-3000));
+				log.info("Starting Monte Carlo");
+				playerThread.start();
+				try {
+					/* Sleep for 1 secondd less than the maximum time allowed */
+					long sleeptime = timeout - System.currentTimeMillis() - 2000 - 1000;
+					log.info("PAUSING PLATYPUS FOR " + sleeptime);
+					Thread.sleep(sleeptime);
+				} catch (InterruptedException e) {
+					log.info("Done with subplayer!");
+					// e.printStackTrace();
+				}
+				/* Tell the thread searching for the best move it is done so it can exit */
+				//playerThread.interrupt();
+				try {
+					/* Sleep for 2 seconds less than the maximum time allowed */
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					log.info("Done with subplayer!");
+					// e.printStackTrace();
+				}
+				Move bestMove = playerResult.getBestMoveSoFar();
+				log.info("--------Best Move after Monte Carlo--------");
+				if (bestMove == null) {
+					bestMove = ALLMOVES.get(new Random().nextInt(ALLMOVES.size()));
+					log.info("CHOSE RANDOM");
+				}
+				long stop = System.currentTimeMillis();
+				log.info("best move: " + bestMove);
+				notifyObservers(new GamerSelectedMoveEvent(moves.get(0), bestMove, stop
+						- start));
+				//log.info("Time left: " + timeout-)
+				return bestMove;
+			}catch(Exception e){
+				System.err.println("ERROR IN SELECT MOVE:");
+				System.err.println(e.getMessage());
+
 			}
-			long stop = System.currentTimeMillis();
-			log.info("Monte Carlo Deemed Bad Idea");
-			log.info("best move: " + bestMove);
-			notifyObservers(new GamerSelectedMoveEvent(moves.get(0), bestMove, stop
-					- start));
-			return bestMove;
 		}
-		
-		Thread playerThread = new Thread(new BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded(
-				getStateMachine(), getRole(), playerResult, getCurrentState(),
-				log, stateMachines, timeout-3000));
-		log.info("Starting Monte Carlo");
-		playerThread.start();
-		try {
-			/* Sleep for 1 secondd less than the maximum time allowed */
-			long sleeptime = timeout - System.currentTimeMillis() - 2000 - 1000;
-			log.info("PAUSING PLATYPUS FOR " + sleeptime);
-			Thread.sleep(sleeptime);
-		} catch (InterruptedException e) {
-			log.info("Done with subplayer!");
-			// e.printStackTrace();
-		}
-		/* Tell the thread searching for the best move it is done so it can exit */
-		//playerThread.interrupt();
-		try {
-			/* Sleep for 2 seconds less than the maximum time allowed */
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			log.info("Done with subplayer!");
-			// e.printStackTrace();
-		}
-		Move bestMove = playerResult.getBestMoveSoFar();
-		log.info("--------Best Move after Monte Carlo--------");
-		if (bestMove == null) {
-			bestMove = ALLMOVES.get(new Random().nextInt(ALLMOVES.size()));
-			log.info("CHOSE RANDOM");
-		}
-		long stop = System.currentTimeMillis();
-		log.info("best move: " + bestMove);
-		notifyObservers(new GamerSelectedMoveEvent(moves.get(0), bestMove, stop
-				- start));
-		//log.info("Time left: " + timeout-)
-		return bestMove;
+		return null;
 	}
-	
-	
+
+
 	private boolean isSuicidal(MachineState currentState, Move move, MachineState acquiredState) {
 		StateMachine stateMachine = getStateMachine();
 		if(NUM_PLAYERS==1) return false;
@@ -217,14 +265,14 @@ public class PlatypusPlayer extends StateMachineGamer {
 
 					for(List<Move> jointMove : jointMoves){
 						MachineState nextState = stateMachine.getNextState(acquiredState, jointMove);
-						
+
 						if ((stateMachine.isTerminal(nextState) && stateMachine.getGoal(nextState,getRole())==0)) {
 							System.out.println("Decided that move " + move + " was SUICIDAL");
 							return true;
 						}
 					}
 				}
-				
+
 			}
 		} catch (MoveDefinitionException e) {
 			// TODO Auto-generated catch block
@@ -236,7 +284,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
 

@@ -51,6 +51,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 		// TODO Auto-generated method stub
 		//return getStateMachine
 		long startTime = System.currentTimeMillis();
+		stateMachines.clear();
 		StateMachine firstMachine = new FirstPropNetStateMachine();
 		long stopTime = System.currentTimeMillis();
 		propNetCreationTime = stopTime - startTime;

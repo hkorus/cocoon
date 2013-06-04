@@ -29,6 +29,7 @@ public class MonteCarloTreeSearchThread extends Thread{
 	private static final boolean ASSUME_WORST_MOVE_FOR_OPPONENT = true;
 	
 	private int CURRENT_FACTOR = 0;
+	private int NUM_FACTORS = 1;
 	private boolean SINGLE_PLAYER_GAME;
 
 	private Map<MachineState,GameNode> stateValues = new HashMap<MachineState, GameNode>();
@@ -54,6 +55,7 @@ public class MonteCarloTreeSearchThread extends Thread{
 			
 			List<Move> moves = stateMachine.getLegalMoves(initialState, role);
 			OUR_TURN = moves.size()!=1;
+			NUM_FACTORS = ((FirstPropNetStateMachine) stateMachine).getNumFactors();
 			while(true){
 				/* Loop over 4 stages until time is up */
 

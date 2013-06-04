@@ -136,7 +136,8 @@ public class PlatypusPlayer extends StateMachineGamer {
 		List<List<List<Move>>> jointMoves = stateMachine.getLegalJointMoves_Factoring(getCurrentState());
 		System.out.println("Legal Joint Moves: " + jointMoves);
 
-
+		List<Move> ALLMOVES = stateMachine.getLegalMoves(getCurrentState(),getRole());
+		
 		/* Check if montecarlo is a good idea */
 		long depthStartTime = System.currentTimeMillis();
 		stateMachine.performDepthCharge(getCurrentState(), null);
@@ -193,7 +194,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 		Move bestMove = playerResult.getBestMoveSoFar();
 		log.info("--------Best Move after Monte Carlo--------");
 		if (bestMove == null) {
-			bestMove = moves.get(0).get(new Random().nextInt(moves.get(0).size()));
+			bestMove = ALLMOVES.get(new Random().nextInt(ALLMOVES.size()));
 			log.info("CHOSE RANDOM");
 		}
 		long stop = System.currentTimeMillis();

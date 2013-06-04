@@ -7,4 +7,5 @@ public class PlatypusConstants {
 	public static final Level LogLevel = Level.ALL;
 	public static boolean writeLogToFile = false;
 	public static boolean writeLogToConsole = true;
+	public static final int NUM_THREADS = 50;
 }

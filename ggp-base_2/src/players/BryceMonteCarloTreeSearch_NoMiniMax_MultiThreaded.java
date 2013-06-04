@@ -31,6 +31,8 @@ public class BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded extends Subplayer
 	//private Map<MachineState,List<MachineState>> stateChildren = new HashMap<MachineState,List<MachineState>>();
 	private static Random rand = new Random();
 	private static final double epsilon = 1e-6;
+	
+	private boolean SINGLE_PLAYER_GAME;
 
 	/* Enables a check to only expand to nodes that won't cause the player to get a score of 0 in a terminal state */
 	private static final boolean GUARANTEED_LOSSES_SINGLE_MOVE_CHECK = false;
@@ -53,7 +55,7 @@ public class BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded extends Subplayer
 		try {
 			GameNode currentNode = new GameNode(currentState);
 			int numDepthCharges = 0;
-			
+			SINGLE_PLAYER_GAME = stateMachine.getRoles().size()==1;
 			/* Threads to do depth charge computations in, results of which are compiled by main thread */
 			List<MonteCarloTreeSearchThread> depthChargeThreads = new ArrayList<MonteCarloTreeSearchThread>();
 			for(int i = 0; i< Math.min(MAX_NUM_THREADS, stateMachines.size()); i++){
@@ -92,14 +94,14 @@ public class BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded extends Subplayer
 				MachineState acquiredState = currentState;
 				for(List<Move> movesToMake : jointMoves){
 					
-					
 					acquiredState = stateMachine.getNextState(currentState,movesToMake);
-					//GameNode acquiredNode = stateValues.get(acquiredState);
+					
 					GameNode acquiredNode = new GameNode(acquiredState);
 					acquiredNode.numVisits = 0;
 					for(MonteCarloTreeSearchThread thread : depthChargeThreads){
-						GameNode threadNode = thread.getStateValues().get(acquiredState); 
+						GameNode threadNode = thread.getStateValues().get(acquiredState);
 						if(threadNode==null) continue;
+						//System.out.println(threadNode.value + " and " + threadNode.numVisits);
 						acquiredNode.value+=threadNode.value;
 						acquiredNode.numVisits+=threadNode.numVisits;
 					}
@@ -115,6 +117,7 @@ public class BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded extends Subplayer
 						System.out.println("Move not explored in tree: " + movesToMake);
 					}
 				}
+				if(moveMinValue==Double.MAX_VALUE) continue; //move wasn't explored anywhere
 				log.info("move: " + move + " value: " + moveMinValue + " visited: " + totalVisits);
 				if(moveMinValue > bestValue){
 					
@@ -136,6 +139,7 @@ public class BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded extends Subplayer
 	}
 
 	private boolean isSuicidal(MachineState currentState, Move move, MachineState acquiredState) {
+		if(SINGLE_PLAYER_GAME) return false;
 		try {
 			if (!stateMachine.isTerminal(acquiredState)) {
 				List<Move> legalMoves = stateMachine.getLegalMoves(acquiredState, role);

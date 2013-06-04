@@ -1,5 +1,6 @@
 package players;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,9 +14,10 @@ import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
+import org.ggp.base.util.statemachine.implementation.propnet.FirstPropNetStateMachine;
 
+import players.GameNode;
 import platypus.utils.Utils;
-
 public class MonteCarloTreeSearchThread extends Thread{
 
 	private StateMachine stateMachine;
@@ -25,6 +27,10 @@ public class MonteCarloTreeSearchThread extends Thread{
 	private int numDepthCharges = 0;
 	private int roleIndex;
 	private static final boolean ASSUME_WORST_MOVE_FOR_OPPONENT = true;
+	
+	private int CURRENT_FACTOR = 0;
+	private int NUM_FACTORS = 1;
+	private boolean SINGLE_PLAYER_GAME;
 
 	private Map<MachineState,GameNode> stateValues = new HashMap<MachineState, GameNode>();
 
@@ -44,8 +50,12 @@ public class MonteCarloTreeSearchThread extends Thread{
 
 		GameNode currentNode = new GameNode(initialState);
 		try{
+			SINGLE_PLAYER_GAME = stateMachine.getRoles().size()==1;
+			System.out.println(SINGLE_PLAYER_GAME ? "Single Player Game" : "MultiPlayerGame");
+			
 			List<Move> moves = stateMachine.getLegalMoves(initialState, role);
 			OUR_TURN = moves.size()!=1;
+			NUM_FACTORS = ((FirstPropNetStateMachine) stateMachine).getNumFactors();
 			while(true){
 				/* Loop over 4 stages until time is up */
 
@@ -56,7 +66,20 @@ public class MonteCarloTreeSearchThread extends Thread{
 				/* Estimate value of leaf */
 				double simulatedValue= 0;
 				if(numDepthCharges==0) Utils.timeout(50);
-				MachineState simulatedTerminalState = stateMachine.performDepthCharge(targetNode.state, null);
+				
+				MachineState simulatedTerminalState;
+				if(!SINGLE_PLAYER_GAME){
+					 simulatedTerminalState = stateMachine.performDepthCharge(targetNode.state, null);
+				} else {
+					simulatedTerminalState = targetNode.state;
+					while(!stateMachine.isTerminal(simulatedTerminalState)){
+						//List<Machin>nextStates = new ArrayList<MachineState>();
+						List<List<Move>> jointMoves = ((FirstPropNetStateMachine)stateMachine).getLegalJointMoves_Factoring(simulatedTerminalState).get(CURRENT_FACTOR);
+						List<Move> jointMove = jointMoves.get(new Random().nextInt(jointMoves.size()));
+						simulatedTerminalState = stateMachine.getNextState(simulatedTerminalState, jointMove);
+					}
+					//System.out.println(simulatedTerminalState);
+				}
 				simulatedValue+= stateMachine.getGoal(simulatedTerminalState, role);
 				//System.out.println("Terminal State: " + simulatedTerminalState);
 				numDepthCharges++;
@@ -183,19 +206,17 @@ public class MonteCarloTreeSearchThread extends Thread{
 
 		startNode.children = new LinkedList<GameNode>();
 
-
-		Random r = new Random();
-		double result = r.nextDouble();
-		//if(result<0.05) System.out.println("Starting State: " + startNode.state);
-		//System.out.println("state: " + startNode.state);
-		List<MachineState> nextStates = stateMachine.getNextStates(startNode.state);
-		//System.out.println("nextStates: " + nextStates);
-		//			if(result<0.05) {
-		//				System.out.println("Ending States: " + nextStates);
-		//				for(MachineState state : nextStates){
-		//					System.out.println(state + " - Terminal - " + stateMachine.isTerminal(state));
-		//				}
-		//			}
+		List<MachineState> nextStates; 
+		
+		if(!SINGLE_PLAYER_GAME){
+			nextStates = stateMachine.getNextStates(startNode.state);
+		} else {
+			nextStates = new ArrayList<MachineState>();
+			for(List<Move> moves : ((FirstPropNetStateMachine)stateMachine).getLegalJointMoves_Factoring(startNode.state).get(CURRENT_FACTOR)){
+				nextStates.add(stateMachine.getNextState(startNode.state,moves));
+			}
+		}
+		//System.out.println("Expanded " + nextStates.size());
 		/* Remove any terminal states where it gets a score of 0 from consideration */
 		for(MachineState state: nextStates){
 			GameNode newChild = new GameNode(state);

@@ -55,6 +55,7 @@ public class NonLosingSubplayer extends Subplayer {
 			if(!moveIsBad) bestMove = move;
 		}
 		threadResult.chosenMove = bestMove;
+		threadResult.completed = true;
 	}
 	
 	private boolean isSuicidal(MachineState currentState, Move move, MachineState acquiredState) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException {
@@ -69,7 +70,7 @@ public class NonLosingSubplayer extends Subplayer {
 						MachineState nextState = stateMachine.getNextState(acquiredState, jointMove);
 
 						if ((stateMachine.isTerminal(nextState) && stateMachine.getGoal(nextState,role)==0)) {
-							System.out.println("Decided that move " + move + " was SUICIDAL");
+							//System.out.println("Nonlosing subplayer: Decided that move " + move + " was SUICIDAL");
 							return true;
 						}
 					}

@@ -36,7 +36,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 	private PlayerResult playerResult = new PlayerResult();
 	private TerminalStateProximity terminalStateProximity;
 	private boolean propNetSafe = true;
-
+	private StateMachine safeMachine = null;
 	private long propNetCreationTime;
 	private int NUM_PLAYERS = 1;
 
@@ -61,10 +61,6 @@ public class PlatypusPlayer extends StateMachineGamer {
 		return firstMachine;
 	}
 
-	public StateMachine getSafeStateMachine(){
-		
-	}
-
 
 
 
@@ -81,38 +77,41 @@ public class PlatypusPlayer extends StateMachineGamer {
 		//create one propnet to get a time estimate
 
 		long startTime = System.currentTimeMillis();
-		StateMachine safeStateMachine = getSafeStateMachine();
-		if (propNetSafe){
-			try{
-				FirstPropNetStateMachine first = new FirstPropNetStateMachine();
+		//build the safe state machine
+		safeMachine = new ProverStateMachine();
+		safeMachine.initialize(getMatch().getGame().getRules());
+
+
+		try{
+			FirstPropNetStateMachine first = new FirstPropNetStateMachine();
+			first.initialize(((FirstPropNetStateMachine) stateMachines.get(0)).getDescription());
+			long duration = System.currentTimeMillis() - startTime;
+			System.out.println("Took " + duration + " to initialize propnet #" + 1);
+			stateMachines.add(first);
+			System.out.println("added new prop machine: " + 1);
+			propNetCreationTime = System.currentTimeMillis() - startTime;
+
+			if(propNetCreationTime==0) propNetCreationTime = 1;
+			long estimatedThreadsToCreate = (timeout-System.currentTimeMillis())/propNetCreationTime;
+			System.out.println("Estimating I can create " + estimatedThreadsToCreate + " propNets in given time.");
+
+			for(int i=2; i<Math.min(BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded.MAX_NUM_THREADS,estimatedThreadsToCreate); i++){
+				first = new FirstPropNetStateMachine();
+				startTime = System.currentTimeMillis();
 				first.initialize(((FirstPropNetStateMachine) stateMachines.get(0)).getDescription());
-				long duration = System.currentTimeMillis() - startTime;
-				System.out.println("Took " + duration + " to initialize propnet #" + 1);
+				duration = System.currentTimeMillis() - startTime;
+				System.out.println("Took " + duration + " to initialize propnet #" + i);
 				stateMachines.add(first);
-				System.out.println("added new prop machine: " + 1);
-				propNetCreationTime = System.currentTimeMillis() - startTime;
-
-				if(propNetCreationTime==0) propNetCreationTime = 1;
-				long estimatedThreadsToCreate = (timeout-System.currentTimeMillis())/propNetCreationTime;
-				System.out.println("Estimating I can create " + estimatedThreadsToCreate + " propNets in given time.");
-
-				for(int i=2; i<Math.min(BryceMonteCarloTreeSearch_NoMiniMax_MultiThreaded.MAX_NUM_THREADS,estimatedThreadsToCreate); i++){
-					first = new FirstPropNetStateMachine();
-					startTime = System.currentTimeMillis();
-					first.initialize(((FirstPropNetStateMachine) stateMachines.get(0)).getDescription());
-					duration = System.currentTimeMillis() - startTime;
-					System.out.println("Took " + duration + " to initialize propnet #" + i);
-					stateMachines.add(first);
-					System.out.println("added new prop machine: " + i);
-					if(System.currentTimeMillis()>timeout) break;
-				}
-				System.out.println("Finished making propnets.");
-			}catch(Exception e){
-				System.err.println("OK, but error caught in METAGAME");
-				e.getStackTrace();
-				propNetSafe= false;
+				System.out.println("added new prop machine: " + i);
+				if(System.currentTimeMillis()>timeout) break;
 			}
+			System.out.println("Finished making propnets.");
+		}catch(Exception e){
+			System.err.println("OK, but error caught in METAGAME");
+			e.getStackTrace();
+			propNetSafe= false;
 		}
+
 	}
 
 
@@ -136,7 +135,6 @@ public class PlatypusPlayer extends StateMachineGamer {
 		playerResult.setBestMoveSoFar(null);
 
 
-		StateMachine safeMachine = getSafeStateMachine();
 
 		// LAUNCH 1 thread with monte carlo tree search on safe machine.
 		ThreadPlayerResult randomPlayerResult = new ThreadPlayerResult();
@@ -145,10 +143,11 @@ public class PlatypusPlayer extends StateMachineGamer {
 				log, randomPlayerResult));
 		randomPlayerThread.run();
 		UncaughtExceptionHandler ueh = new UncaughtExceptionHandler() {
-			
+
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
 				System.err.println("DEFAULT EXCEPTION HANDLER");
+				t.interrupt();
 				e.printStackTrace();
 			}
 		};
@@ -213,7 +212,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 						log, stateMachines, timeout-3000));
 				log.info("Starting Monte Carlo");
 				playerThread.start();
-
+				mctsSubplayerFactored.completed = true;
 			}catch(Exception e){
 				System.err.println("ERROR caught in Platypus IN MCTS section (factored)");
 				System.err.println(e.getMessage());
@@ -260,27 +259,27 @@ public class PlatypusPlayer extends StateMachineGamer {
 		if (mctsSubplayerFactored.completed){
 			mctsSubplayerFactored.chosenMove = playerResult.getBestMoveSoFar();
 		}
-		
+
 		Move chosenMove = null;
 		log.info("-------------------MOVE RESULT----------------");
-		if (mctsSubplayerFactored.completed){
+		if (mctsSubplayerFactored.completed && mctsSubplayerFactored.chosenMove != null){
 			log.info("mcts factored subplayer completed: chosen move is "+ mctsSubplayerFactored.chosenMove);
 			chosenMove = mctsSubplayerFactored.chosenMove;
-		}else if(nonLosingPlayerResult.completed){
+		}else if(nonLosingPlayerResult.completed && nonLosingPlayerResult.chosenMove != null){
 			log.info("non losing player completed: chosen move is " + nonLosingPlayerResult.chosenMove);
 			chosenMove = nonLosingPlayerResult.chosenMove;
 		}else if(randomPlayerResult.completed){
 			log.info("random player completed: chosen move is "+ randomPlayerResult.chosenMove);
 			chosenMove = randomPlayerResult.chosenMove;
 		}
-		
-		
-		
+
+
+
 		long stop = System.currentTimeMillis();
-		
-		
-		
-		
+
+
+
+
 		notifyObservers(new GamerSelectedMoveEvent(moves.get(0), chosenMove, stop
 				- start));
 		//log.info("Time left: " + timeout-)

@@ -1,5 +1,6 @@
 package org.ggp.base.player.gamer.statemachine;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -61,7 +62,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 	}
 
 	public StateMachine getSafeStateMachine(){
-		return new ProverStateMachine();
+		
 	}
 
 
@@ -143,6 +144,15 @@ public class PlatypusPlayer extends StateMachineGamer {
 				safeMachine, getRole(), playerResult, getCurrentState(),
 				log, randomPlayerResult));
 		randomPlayerThread.run();
+		UncaughtExceptionHandler ueh = new UncaughtExceptionHandler() {
+			
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				System.err.println("DEFAULT EXCEPTION HANDLER");
+				e.printStackTrace();
+			}
+		};
+		Thread.setDefaultUncaughtExceptionHandler(ueh);
 		log.info("Starting random player!");
 
 		ThreadPlayerResult nonLosingPlayerResult = new ThreadPlayerResult();

@@ -18,6 +18,8 @@ public class RandomSubplayer extends Subplayer {
 		super(stateMachine, role, playerResult, currentState, log);
 		// TODO Auto-generated constructor stub
 		this.threadResult = threadResult;
+		
+		System.out.println("RandomSubplayer: " + stateMachine + " " + currentState);
 	}
 
 	@Override
@@ -34,8 +36,8 @@ public class RandomSubplayer extends Subplayer {
 			threadResult.completed = false;
 		} catch (Exception e){
 			System.err.println("RandomSubplayer with some error!");
+			e.printStackTrace();
 			threadResult.completed = false;
-			System.err.println(e.getMessage());
 		}
 	}
 }

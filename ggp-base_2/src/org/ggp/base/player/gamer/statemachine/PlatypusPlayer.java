@@ -83,6 +83,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 		//create one propnet to get a time estimate
 
 		long startTime = System.currentTimeMillis();
+		
 		FirstPropNetStateMachine first = new FirstPropNetStateMachine();
 		first.initialize(((FirstPropNetStateMachine) stateMachines.get(0)).getDescription());
 		long duration = System.currentTimeMillis() - startTime;
@@ -137,7 +138,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 		System.out.println("Legal Joint Moves: " + jointMoves);
 
 		List<Move> ALLMOVES = stateMachine.getLegalMoves(getCurrentState(),getRole());
-		
+		System.out.println("ALLMOVES: " + ALLMOVES);
 		/* Check if montecarlo is a good idea */
 		long depthStartTime = System.currentTimeMillis();
 		stateMachine.performDepthCharge(getCurrentState(), null);
@@ -193,7 +194,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 		}
 		Move bestMove = playerResult.getBestMoveSoFar();
 		log.info("--------Best Move after Monte Carlo--------");
-		if (bestMove == null) {
+		if (bestMove == null || !ALLMOVES.contains(bestMove)) {
 			bestMove = ALLMOVES.get(new Random().nextInt(ALLMOVES.size()));
 			log.info("CHOSE RANDOM");
 		}
